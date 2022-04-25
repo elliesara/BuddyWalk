@@ -1,0 +1,12 @@
+.buttonComponent {
+    border-radius: 5px;
+    height: fit-content;
+    color: white;
+    border-width: 0px;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 25px;
+    font-family: Helvetica, sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+}

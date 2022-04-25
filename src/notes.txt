@@ -1,0 +1,3 @@
+- need a way to connect requests u made with the other page where u can see people who offered to walk
+- user/login implementation (mostly backend things i think?)
+- how we're going to do location

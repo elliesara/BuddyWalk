@@ -1,0 +1,29 @@
+.container {
+    font-family: Helvetica, sans-serif;
+    display: flex;
+    flex-direction: row;
+    width: 70vw;
+    height: 30px;
+    border-radius: 20px;
+    padding: 20px 0px;
+    margin: 5px;
+    justify-content: space-around;
+    box-shadow: 5px 5px #cacaca;
+}
+
+.avatar {
+    border-radius: 50%;
+}
+
+.requester {
+    font-weight: bold;
+}
+
+.stacked {
+    padding: 0px;
+    margin: 0px;
+}
+
+.destination {
+    font-weight: bold;
+}

@@ -1,0 +1,69 @@
+.sidebar {
+    position: relative;
+    font-family: Helvetica, sans-serif;
+}
+
+.hamburger-menu {
+    background: transparent;
+    border: none;
+    position: fixed;
+    z-index: 10;
+    cursor: pointer;
+    z-index: 1001;
+    margin-top: 1.5%;
+    margin-left: 1%;
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+}
+
+.menu {
+    overflow-y: scroll;
+    list-style: none;
+    position: fixed;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: #5b91e2;
+    height: 100vh;
+    width: 0;
+    overflow: hidden;
+    max-width: 290px;
+    z-index: 9;
+}
+
+.menuOpen {
+    width: fit-content;
+    height: 100vh;
+    padding-right: 5vw;
+    background-color: #5b91e2;
+    transition: transform .3s cubic-bezier(0, .52, 0, 1);
+    z-index: 1000;
+    transform: translate3d(0vw, 0, 0);
+    overflow: hidden;
+}
+
+.menuClose {
+    transform: translate3d(-100vw, 0, 0);
+}
+
+.menu ul {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.menu li:first-child {
+    margin-top: 5vh;
+  }
+
+.menu li {
+    margin: 5px;
+    text-decoration: none;
+}
+
+.menu li a {
+    text-decoration: none;
+}
+
+.menu li a:hover {
+    text-decoration: underline;
+}
