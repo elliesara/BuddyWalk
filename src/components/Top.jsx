@@ -1,10 +1,11 @@
 import "./top.css";
+import Avatar from "./Avatar"
 
 function Top() {
-    // missing the profile pic on right side
     return (
         <div className="top">
             <header className="top-header">Buddy Walk</header>
+            <Avatar source="./a.png" />
         </div>
     )
 }

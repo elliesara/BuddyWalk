@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightLong } from '@fortawesome/free-solid-svg-icons';
 import Button from "./Button";
+import Avatar from "./Avatar";
 import "./activewalkrequest.css";
 
 function ActiveWalkRequest({ requester, from, to }) {
@@ -14,15 +15,23 @@ function ActiveWalkRequest({ requester, from, to }) {
 
     return (
         <div class="container">
-            <img src="./a.png" alt="stock avatar" class="avatar"></img>
-            <p class="requester">{requester}</p>
-            <div>
-                <p class="stacked">{from} <FontAwesomeIcon icon={faArrowRightLong} /></p>
-                <p class="stacked destination">{to}</p>
+            <div class="containerItem">
+                <Avatar source="./a.png" />
             </div>
-            <Button text="Offer a walk" color="orange" callback={sendRequest} class="item" />
+            <div class="containerItem">
+                <p class="requester">{requester}</p>
+            </div>
+            <div class="containerItem">
+                <div class="stackedContainer">
+                    <p class="stacked">{from} <FontAwesomeIcon icon={faArrowRightLong} /></p>
+                    <p class="stacked destination">{to}</p>
+                </div>
+            </div>
+            <div class="stackedContainer">
+                <Button text="Offer a walk" color="orange" callback={sendRequest} class="item" />
+            </div>
         </div>
-    ) // WHY IS THIS DISPLAYING THE THINGS IN THE WRONG ORDER I DONT GET IT
+    ) // why is this not aligned properly i cant figure it out
 }
 
 export default ActiveWalkRequest;
