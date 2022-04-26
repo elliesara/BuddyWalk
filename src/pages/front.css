@@ -1,5 +1,6 @@
 html {
-    background-color: #faf9f6;
+    background-color: rgb(243, 241, 235);
+    font-family: Helvetica, sans-serif;
 }
 
 .base {
@@ -31,7 +32,7 @@ html {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    margin: 2vh 0vw 0vh 0vw;
+    margin: 4vh 0vw 4vh 0vw;
 }
 
 #requestInput {
@@ -43,4 +44,5 @@ html {
     margin-right: 1.5vw;
     width: 25vw;
     font-size: medium;
+    height: auto;
 }

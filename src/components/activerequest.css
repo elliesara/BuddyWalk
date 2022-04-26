@@ -20,6 +20,8 @@
 
 .requester {
     font-weight: bold;
+    max-width: 10vw;
+    overflow-wrap: break-word;
 }
 
 .stackedContainer {

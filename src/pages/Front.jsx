@@ -3,7 +3,7 @@ import Top from "../components/Top"
 import Sidebar from "../components/Sidebar"
 import Button from "../components/Button"
 import ActiveRequest from "../components/ActiveRequest"
-import PendingRequest from "../components/PendingRequest"
+import YourRequest from "../components/YourRequest"
 import PastRequest from "../components/PastRequest"
 
 // the entries r there just as placeholders so i can see what im doing
@@ -19,9 +19,9 @@ function Front() {
                 </form>
                 <header className="sectionHeader">Current Requests</header>
                 <ActiveRequest requester="Alice" from="Evans" to="Unit 1" />
-                <ActiveRequest requester="Alice" from="Evans" to="Unit 1" />
+                <ActiveRequest requester="Bob" from="Evans" to="Unit 1" />
                 <header className="sectionHeader">Pending Requests</header>
-                <PendingRequest requester="Alice" />
+                <YourRequest />
                 <header className="sectionHeader">Past Requests</header>
                 <PastRequest from="Moffitt Library" to="Unit 2" />
             </div>
