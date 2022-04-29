@@ -1,0 +1,31 @@
+.yourRequestContainer {
+    font-family: Helvetica, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.yourRequest {
+    display: flex;
+    flex-direction: row;
+    width: 70vw;
+    height: 2vh;
+    border-radius: 20px;
+    padding: 20px 0px;
+    margin: 1vh 0vw 1vh 0vw;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 5px 5px #cacaca;
+    background-color: #5b91e2;
+    color: white;
+}
+
+.yourRequest .from {
+    margin: 5vw;
+}
+
+.yourRequest .destination {
+    margin: 5vw;
+    font-weight: bold;
+}

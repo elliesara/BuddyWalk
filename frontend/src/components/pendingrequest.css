@@ -1,0 +1,39 @@
+.pendingRequest {
+    font-family: Helvetica, sans-serif;
+    display: flex;
+    flex-direction: row;
+    width: 70vw;
+    height: 2vh;
+    border-radius: 20px;
+    padding: 20px 0px;
+    margin: 1vh;
+    align-items: center;
+    justify-content: space-around;
+    box-shadow: 2px 5px 5px #cacaca;
+    background-color: white;
+}
+
+.pendingRequest:hover {
+    transform: translateY(-1px);
+    transition: transform 0.3s ease-in-out;
+}
+
+.currentlyAt {
+    font-style: italic;
+}
+
+.requesterDistance {
+    color: #7f7f7f;
+    font-style: italic;
+}
+
+.requesterLocation {
+    font-weight: bold;
+}
+
+.choices {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 20vw;
+}

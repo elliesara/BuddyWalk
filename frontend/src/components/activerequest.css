@@ -1,0 +1,38 @@
+.container {
+    font-family: Helvetica, sans-serif;
+    display: flex;
+    flex-direction: row;
+    width: 70vw;
+    height: 3.5vh;
+    border-radius: 20px;
+    padding: 20px 0px;
+    margin: 1vh;
+    align-items: center;
+    justify-content: space-around;
+    box-shadow: 2px 5px 5px #cacaca;
+    background-color: white;
+}
+
+.container:hover {
+    transform: translateY(-1px);
+    transition: transform 0.3s ease-in-out;
+}
+
+.requester {
+    font-weight: bold;
+    max-width: 10vw;
+    overflow-wrap: break-word;
+}
+
+.stackedContainer {
+    height: fit-content;
+}
+
+.stacked {
+    padding: 0px;
+    margin: 0px;
+}
+
+.destination {
+    font-weight: bold;
+}
