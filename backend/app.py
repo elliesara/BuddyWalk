@@ -2,19 +2,46 @@
 
 from flask import Flask, request, Response
 import json
-import pymongo
+import logging
+import sqlite3
+import uuid
 
+DATABASE = './database.db'
 app = Flask(__name__)
+db = sqlite3.connect(DATABASE, check_same_thread=False)
+cursor = db.cursor()
+userdb = """
+          CREATE TABLE IF NOT EXISTS users (
+            username text not null,
+            password text not null
+          );
+        """
+cursor.execute(userdb)
+db.commit()
 
-def mongoConnection():
-    try:
-        client = pymongo.MongoClient("mongodb+srv://selinnen:admin@cluster0.yyatd.mongodb.net/testDB?retryWrites=true&w=majority")
-        db = client["test"]
-        col = db["testCol"]
-        return col
-    except:
-        return Exception('Error connecting to DB')
+requestdb = """
+          CREATE TABLE IF NOT EXISTS requests (
+            rid text not null,
+            username text not null,
+            from text not null,
+            to text not null
+          );
+        """
+cursor.execute(requestdb)
+db.commit()
 
+pendingreqdb = """
+          CREATE TABLE IF NOT EXISTS pendingrequests (
+            rid text not null,
+            owner text not null,
+            requester text not null,
+            status text not null
+          );
+        """
+cursor.execute(pendingreqdb)
+db.commit()
+
+# does not check same username
 @app.route('/createUser', methods=["POST"])
 def createUser():
     if request.headers['Content-Type'] == 'application/json':
@@ -32,12 +59,9 @@ def createUser():
             'error': 'This input is not in a json format',
             'status': 404
         }, 404
-    col = mongoConnection()
-    record = {
-        "username": username,
-        "password": password
-    }
-    col.insert_one(record)
+    query = "INSERT INTO users (username, password) VALUES (?, ?)"
+    cursor.execute(query, [username, password])
+    db.commit()
     response = Response(
         response=json.dumps({
             "username": username,
@@ -65,18 +89,11 @@ def logIn():
             'error': 'This input is not in a json format',
             'status': 404
         }, 404
-    col = mongoConnection()
-    record = {
-        "username": username,
-        "password": password
-    }
-    task = col.find_one(record)
-    if task is None:
-        return {
-            'error': 'User not found',
-            'status': 404
-        }, 404
-    else:
+    try:
+        query = "select * from users where username = ? and password = ?"
+        cursor.execute(query, [username, password])
+        rv = cursor.fetchall()
+        rv[0][0]
         response = Response(
             response=json.dumps({
                 "username": username,
@@ -86,6 +103,11 @@ def logIn():
             mimetype='application/json'
         )
         return response
+    except:
+        return {
+            'error': 'User not found',
+            'status': 404
+        }, 404
 
 @app.route('/createRequest', methods=["POST"])
 def createRequest():
@@ -105,27 +127,211 @@ def createRequest():
             'error': 'This input is not in a json format',
             'status': 404
         }, 404
-    col = mongoConnection()
-    record = {
-        "username": username,
-        "password": password
-    }
-    task = col.find_one(record)
-    if task is None:
+    rid = str(uuid.uuid4())
+    query = "INSERT INTO requests (rid, username, from, to) VALUES (?, ?, ?, ?)"
+    cursor.execute(query, [rid, username, fromPlace, toPlace])
+    db.commit()
+    response = Response(
+        response=json.dumps({
+            "rid": rid,
+            "message": "success"
+        }), 
+        status=201, 
+        mimetype='application/json'
+    )
+    return response
+
+@app.route('/requests', methods=["GET"])
+def listAllRequests():
+    try:
+        query = "select * from requests"
+        cursor.execute(query)
+        rv = cursor.fetchall()
+        requests = []
+        for row in range(len(rv)):
+            rid = rv[row][0]
+            username = rv[row][1]
+            fromPlace = rv[row][2]
+            toPlace = rv[row][3]
+            value = {
+                "rid": rid,
+                "username": username,
+                "from": fromPlace,
+                "to": toPlace
+            }
+            requests += [value]
+        return {'requests': requests}, 200
+    except:
         return {
-            'error': 'User not found',
+            'error': 'Listing all requests error',
             'status': 404
         }, 404
+
+@app.route('/offer', methods=["POST"])
+def offerWalk():
+    if request.headers['Content-Type'] == 'application/json':
+        arguments = request.get_json()
+        if "username" in arguments and "rid" in arguments:
+            username = arguments.get("username")
+            rid = arguments.get("rid")
+        else:
+            return {
+                'error': 'This input does not contain proper fields',
+                'status': 404
+            }, 404
     else:
+        return {
+            'error': 'This input is not in a json format',
+            'status': 404
+        }, 404
+    try:
+        #add pending request to the owner
+        getQuery = "SELECT username from requests where rid = ?"
+        cursor.execute(getQuery, [rid])
+        rv = cursor.fetchall()
+        owner = rv[0][0]
+        status = "waiting"
+        query = "INSERT INTO pendingrequests (rid, owner, requester, status) VALUES (?, ?, ?, ?)"
+        cursor.execute(query, [rid, owner, username, status])
+        db.commit()
         response = Response(
             response=json.dumps({
-                "username": username,
+                "rid": rid,
+                "owner": owner,
+                "requester": username,
+                "status": status,
                 "message": "success"
             }), 
-            status=201, 
+            status=200, 
             mimetype='application/json'
         )
         return response
+    except:
+        return {
+            'error': 'Offer a walk error',
+            'status': 404
+        }, 404
+
+@app.route('/pendingrequest', methods=["POST"])
+def getPendingRequest():
+    if request.headers['Content-Type'] == 'application/json':
+        arguments = request.get_json()
+        if "username" in arguments:
+            username = arguments.get("username")
+        else:
+            return {
+                'error': 'This input does not contain proper fields',
+                'status': 404
+            }, 404
+    else:
+        return {
+            'error': 'This input is not in a json format',
+            'status': 404
+        }, 404
+    getQuery = "SELECT * from pendingrequests where owner = ?"
+    cursor.execute(getQuery, [username])
+    rv = cursor.fetchall()
+    requests = []
+    for row in range(len(rv)):
+        rid = rv[row][0]
+        owner = rv[row][1]
+        requester = rv[row][2]
+        status = rv[row][3]
+        value = {
+            "rid": rid,
+            "owner": owner,
+            "requester": requester,
+            "status": status
+        }
+        requests += [value]
+    return {'requests': requests}, 200
+
+@app.route('/pendingoffer', methods=["POST"])
+def getPendingOffer():
+    if request.headers['Content-Type'] == 'application/json':
+        arguments = request.get_json()
+        if "username" in arguments:
+            username = arguments.get("username")
+        else:
+            return {
+                'error': 'This input does not contain proper fields',
+                'status': 404
+            }, 404
+    else:
+        return {
+            'error': 'This input is not in a json format',
+            'status': 404
+        }, 404
+    getQuery = "SELECT * from pendingrequests where requester = ?"
+    cursor.execute(getQuery, [username])
+    rv = cursor.fetchall()
+    requests = []
+    for row in range(len(rv)):
+        rid = rv[row][0]
+        owner = rv[row][1]
+        requester = rv[row][2]
+        status = rv[row][3]
+        value = {
+            "rid": rid,
+            "owner": owner,
+            "requester": requester,
+            "status": status
+        }
+        requests += [value]
+    return {'requests': requests}, 200
+
+@app.route('/acceptpendingoffer', methods=["POST"])
+def acceptPendingOffer():
+    if request.headers['Content-Type'] == 'application/json':
+        arguments = request.get_json()
+        if "owner" in arguments and "rid" in arguments and "requester" in arguments:
+            owner = arguments.get("owner")
+            rid = arguments.get("rid")
+            requester = arguments.get("requester")
+        else:
+            return {
+                'error': 'This input does not contain proper fields',
+                'status': 404
+            }, 404
+    else:
+        return {
+            'error': 'This input is not in a json format',
+            'status': 404
+        }, 404
+    try:
+        getQuery = "SELECT status from pendingrequests where owner = ? and requester = ? and rid = ?"
+        cursor.execute(getQuery, [owner, requester, rid])
+        rv = cursor.fetchall()
+        status = rv[0][0]
+        if status == "waiting":
+            declinequery = "UPDATE pendingrequests SET status = decline WHERE rid = ?"
+            cursor.execute(declinequery, [rid])
+            db.commit()
+            query = "UPDATE pendingrequests SET status = accept WHERE owner = ? and requester = ? and rid = ?"
+            cursor.execute(query, [owner, requester, rid])
+            db.commit()
+            response = Response(
+                response=json.dumps({
+                    "rid": rid,
+                    "owner": owner,
+                    "requester": requester,
+                    "status": status,
+                    "message": "success"
+                }), 
+                status=200, 
+                mimetype='application/json'
+            )
+            return response
+        else:
+            return {
+                'error': 'Not a valid pending offer',
+                'status': 404
+            }, 404
+    except:
+        return {
+                'error': 'Accept pending offer error',
+                'status': 404
+            }, 404
 
 if __name__ == "__main__":
   app.run(host="0.0.0.0", port=8000, debug=True)
