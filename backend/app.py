@@ -1,6 +1,7 @@
 #app.py
 
 from flask import Flask, request, Response
+from flask_cors import CORS
 import json
 import logging
 import sqlite3
@@ -8,6 +9,7 @@ import uuid
 
 DATABASE = './database.db'
 app = Flask(__name__)
+CORS(app)
 db = sqlite3.connect(DATABASE, check_same_thread=False)
 cursor = db.cursor()
 userdb = """

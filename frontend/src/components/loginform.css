@@ -1,0 +1,25 @@
+.login {
+    border-radius: 10px;
+    border-width: 0px;
+    background-color: #e1e1e1;
+    color: #3c3c3c;
+    margin: 0vh;
+    padding: 10px 10px;
+    width: 20vw;
+    font-size: medium;
+}
+
+#loginForm, #signupForm {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.buttonContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    width: 20vw;
+}

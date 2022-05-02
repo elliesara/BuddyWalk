@@ -7,8 +7,8 @@ function App() {
     // this is likely going to be a routing thing (if logged in, go to front, if not go to register/login pages) 
     // i just have front here as a placeholder to see what im doing
     
-    <Front />
-    // <Login />
+    // <Front />
+    <Login />
   );
 }
 

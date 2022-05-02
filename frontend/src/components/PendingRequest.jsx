@@ -20,11 +20,6 @@ function PendingRequest( {requester} ) {
             <Avatar source="./a.png" />
             <div className="stackedContainer">
                 <p className="stacked requester">{requester}</p>
-                <p className="stacked requesterDistance">0.4mi</p>
-            </div>
-            <div className="stacked">
-                <p className="stacked currentlyAt">Currently at</p>
-                <p className="stacked requesterLocation">Crossroads</p>
             </div>
             <div className="choices">
                 <Button text="Accept" color="#34c258" callback={acceptRequest} />
