@@ -23,8 +23,8 @@ requestdb = """
           CREATE TABLE IF NOT EXISTS requests (
             rid text not null,
             username text not null,
-            from text not null,
-            to text not null
+            fromplace text not null,
+            toplace text not null
           );
         """
 cursor.execute(requestdb)
@@ -128,7 +128,7 @@ def createRequest():
             'status': 404
         }, 404
     rid = str(uuid.uuid4())
-    query = "INSERT INTO requests (rid, username, from, to) VALUES (?, ?, ?, ?)"
+    query = "INSERT INTO requests (rid, username, fromplace, toplace) VALUES (?, ?, ?, ?)"
     cursor.execute(query, [rid, username, fromPlace, toPlace])
     db.commit()
     response = Response(
@@ -146,6 +146,47 @@ def listAllRequests():
     try:
         query = "select * from requests"
         cursor.execute(query)
+        rv = cursor.fetchall()
+        requests = []
+        for row in range(len(rv)):
+            rid = rv[row][0]
+            username = rv[row][1]
+            fromPlace = rv[row][2]
+            toPlace = rv[row][3]
+            value = {
+                "rid": rid,
+                "username": username,
+                "from": fromPlace,
+                "to": toPlace
+            }
+            requests += [value]
+        return {'requests': requests}, 200
+    except:
+        return {
+            'error': 'Listing all requests error',
+            'status': 404
+        }, 404
+
+
+@app.route('/requests', methods=["POST"])
+def listUserRequests():
+    if request.headers['Content-Type'] == 'application/json':
+        arguments = request.get_json()
+        if "username" in arguments:
+            username = arguments.get("username")
+        else:
+            return {
+                'error': 'This input does not contain proper fields',
+                'status': 404
+            }, 404
+    else:
+        return {
+            'error': 'This input is not in a json format',
+            'status': 404
+        }, 404
+    try:
+        query = "select * from requests where username = ?"
+        cursor.execute(query, [username])
         rv = cursor.fetchall()
         requests = []
         for row in range(len(rv)):
@@ -212,7 +253,7 @@ def offerWalk():
             'status': 404
         }, 404
 
-@app.route('/pendingrequest', methods=["POST"])
+@app.route('/pendingRequest', methods=["POST"])
 def getPendingRequest():
     if request.headers['Content-Type'] == 'application/json':
         arguments = request.get_json()
@@ -246,7 +287,7 @@ def getPendingRequest():
         requests += [value]
     return {'requests': requests}, 200
 
-@app.route('/pendingoffer', methods=["POST"])
+@app.route('/pendingOffer', methods=["POST"])
 def getPendingOffer():
     if request.headers['Content-Type'] == 'application/json':
         arguments = request.get_json()
@@ -280,12 +321,11 @@ def getPendingOffer():
         requests += [value]
     return {'requests': requests}, 200
 
-@app.route('/acceptpendingoffer', methods=["POST"])
-def acceptPendingOffer():
+@app.route('/acceptPendingRequest', methods=["POST"])
+def acceptPendingRequest():
     if request.headers['Content-Type'] == 'application/json':
         arguments = request.get_json()
-        if "owner" in arguments and "rid" in arguments and "requester" in arguments:
-            owner = arguments.get("owner")
+        if "rid" in arguments and "requester" in arguments:
             rid = arguments.get("rid")
             requester = arguments.get("requester")
         else:
@@ -299,21 +339,20 @@ def acceptPendingOffer():
             'status': 404
         }, 404
     try:
-        getQuery = "SELECT status from pendingrequests where owner = ? and requester = ? and rid = ?"
-        cursor.execute(getQuery, [owner, requester, rid])
+        getQuery = "SELECT status from pendingrequests where requester = ? and rid = ?"
+        cursor.execute(getQuery, [requester, rid])
         rv = cursor.fetchall()
         status = rv[0][0]
         if status == "waiting":
             declinequery = "UPDATE pendingrequests SET status = decline WHERE rid = ?"
             cursor.execute(declinequery, [rid])
             db.commit()
-            query = "UPDATE pendingrequests SET status = accept WHERE owner = ? and requester = ? and rid = ?"
-            cursor.execute(query, [owner, requester, rid])
+            query = "UPDATE pendingrequests SET status = accept WHERE requester = ? and rid = ?"
+            cursor.execute(query, [requester, rid])
             db.commit()
             response = Response(
                 response=json.dumps({
                     "rid": rid,
-                    "owner": owner,
                     "requester": requester,
                     "status": status,
                     "message": "success"
