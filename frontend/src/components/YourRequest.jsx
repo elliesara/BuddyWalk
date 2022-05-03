@@ -3,16 +3,15 @@ import PendingRequest from "./PendingRequest";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightLong } from '@fortawesome/free-solid-svg-icons';
 
-function YourRequest( { request } ) {
+function YourRequest( { rid, from, to } ) {
     return (
         <div className="yourRequestContainer">
             <div className="yourRequest">
-                <p className="from">Evans</p>
+                <p className="from">{from}</p>
                 <FontAwesomeIcon icon={faArrowRightLong} />
-                <p className="destination">Foothill Residence Halls</p>
+                <p className="destination">{to}</p>
             </div>
             <PendingRequest requester="Alice" />
-            <PendingRequest requester="Bob" />
         </div>
     )
 }

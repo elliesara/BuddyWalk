@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import "./front.css"
 import Top from "../components/Top"
 import Button from "../components/Button"
@@ -6,25 +7,167 @@ import YourRequest from "../components/YourRequest"
 import PastRequest from "../components/PastRequest"
 import ActiveOffer from "../components/ActiveOffer"
 
-// the entries r there just as placeholders so i can see what im doing
 // probably end up with just the three headers and a function to populate each of the sections as requests come in (backend?)
 
-function Front() {
+function Front( { user } ) {
+    const [currentRequests, setCurrentRequests] = useState([]);
+    const [yourRequests, setYourRequests] = useState([]);
+    const [pendingOffers, setPendingOffers] = useState([]);
+    const [pastRequests, setPastRequests] = useState([]);
+
+    useEffect(() => {
+        // fetching initial current requests section
+        fetch("http://localhost:8000/requests", {
+            method: "GET"
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data["message"] === "success") {
+                setCurrentRequests(data["requests"]);
+            } else {
+                alert("asd1");
+                console.log(data);
+            }
+        })
+        .catch(console.error);
+
+        // fetching initial requests youve made section
+        fetch("http://localhost:8000/requests", {
+            method: "POST",
+            body: JSON.stringify({
+                "username": user,
+            }),
+            headers: {
+                'Content-type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data["message"] === "success") {
+                setYourRequests(data["requests"]);
+            } else {
+                alert("asd");
+                console.log(data);
+            }
+        })
+        .catch(console.error);
+
+        // fetching initial offers uve made section
+        fetch("http://localhost:8000/pendingOffer", {
+            method: "POST",
+            body: JSON.stringify({
+                "username": user,
+            }),
+            headers: {
+                'Content-type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data["message"] === "success") {
+                setPendingOffers(data["requests"]);
+            } else {
+                alert("asd2");
+                console.log(data);
+            }
+        })
+        .catch(console.error);
+
+    }, [])
+
+    function createRequest(e) {
+        e.preventDefault();
+        fetch("http://localhost:8000/createRequest", {
+            method: "POST",
+            body: JSON.stringify({
+                "username": user,
+                "from": document.getElementById("requestFrom").value,
+                "to": document.getElementById("requestTo").value,
+            }),
+            headers: {
+                'Content-type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data["message"] === "success") {
+                // add the newest request
+                document.getElementById("requestForm").reset();
+                yourRequests.push({ "rid": data["rid"], "from": data["from"], "to": data["to"]});
+                setYourRequests(yourRequests);
+                console.log(yourRequests);
+            } else {
+                alert("Failed to create request, please try again.");
+                console.log(data);
+            }
+        })
+        .catch(console.error);
+    }
+
+    function update(e) {
+        // probably just update the first three sections; the last one should handle itself
+        e.preventDefault();
+        fetch("http://localhost:8000/requests", {
+            method: "GET"
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data["message"] === "success") {
+                setCurrentRequests(data["requests"]);
+            } else {
+                alert("Failed to fetch new requests, please try again.");
+                console.log(data);
+            }
+        })
+        .catch(console.error);
+        fetch("http://localhost:8000/pendingRequest", {
+            method: "POST",
+            body: JSON.stringify({
+                "username": user,
+            }),
+            headers: {
+                'Content-type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+                if (data["message"] === "success") {
+                    // group by request id and display (but how)
+                } else {
+                    alert("refresh bad");
+                }
+            }
+        )
+        .catch(console.error);
+    }
+
+    function filterOwnRequestsOut({a, username, b, c}) {
+        return user !== username;
+    }
+
     return (
         <div className="base">
-            <div className="topBar"><Top /></div>
+            <div className="topBar"><Top user={user} /></div>
             <div className="main">
                 <form id="requestForm">
-                    <input type="text" id="requestInput" placeholder="From" /><input type="text" id="requestInput" placeholder="To" /><Button text="Request a Walk" color="#575757" />
+                    <input type="text" id="requestFrom" placeholder="From" />
+                    <input type="text" id="requestTo" placeholder="To" />
+                    <Button text="Request a Walk" color="#575757" callback={createRequest} />
                 </form>
+                <Button text="Refresh Requests and Offers" color="#575757" callback={update} />
                 <header className="sectionHeader">Current Requests</header>
-                <ActiveRequest requester="Alice" from="Evans" to="Unit 1" />
-                <ActiveRequest requester="Bob" from="Evans" to="Unit 1" />
+                {currentRequests.map(({rid, username, from, to}) => (
+                    <ActiveRequest user={user} rid={rid} requester={username} from={from} to={to} />
+                )).filter(filterOwnRequestsOut)}
                 <header className="sectionHeader">Requests You've Made</header>
-                <YourRequest />
+                {yourRequests.map(({rid, _, from, to}) => (
+                    <YourRequest rid={rid} from={from} to={to} />
+                ))}
                 <header className="sectionHeader">Offers You've Made</header>
-                <ActiveOffer offeredTo="Bob" destination="kms" />
-                <header className="sectionHeader">Past Requests</header>
+                {pendingOffers.map(({rid, owner, requester, status}) => (
+                    <ActiveOffer offeredTo={requester} status={status} />
+                ))}
+                <header className="sectionHeader">Your Past Requests</header>
                 <PastRequest from="Moffitt Library" to="Unit 2" />
             </div>
         </div>

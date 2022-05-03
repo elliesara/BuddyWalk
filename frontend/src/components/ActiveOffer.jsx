@@ -1,6 +1,6 @@
 import "./activeoffer.css";
 
-function ActiveOffer( {offeredTo, destination} ) {
+function ActiveOffer( { offeredTo, status } ) {
     return (
         <div className="activeOffer">
             <div className="horizContainer">
@@ -8,8 +8,8 @@ function ActiveOffer( {offeredTo, destination} ) {
                 <p>{offeredTo}</p>
             </div>
             <div className="horizContainer">
-                <p className="emphasized">Destination:</p>
-                <p>{destination}</p>
+                <p className="emphasized">Status:</p>
+                <p>{status}</p>
             </div>
         </div>
     )

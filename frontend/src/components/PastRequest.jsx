@@ -4,10 +4,10 @@ import { faArrowRightLong } from '@fortawesome/free-solid-svg-icons';
 
 function PastRequest( { from, to } ) {
     return (
-        <div class="pastWalkRequest">
-            <p class="from">{from}</p>
+        <div className="pastWalkRequest">
+            <p className="from">{from}</p>
             <FontAwesomeIcon icon={faArrowRightLong} />
-            <p class="destination">{to}</p>
+            <p className="destination">{to}</p>
         </div>
     )
 }

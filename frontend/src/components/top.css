@@ -6,12 +6,22 @@
     justify-content: space-between;
     height: 50px;
     padding-right: 0.75vw;
+    color: white;
+    font-family: Helvetica, sans-serif;
 }
 
 .top-header {
     font-weight: bold;
     margin: auto;
-    color: white;
-    font-family: Helvetica, sans-serif;
     font-size: large;
+}
+
+.userInfo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.username {
+    margin: 0vh 1vw 0vh 1vw;
 }
