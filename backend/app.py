@@ -3,7 +3,6 @@
 from flask import Flask, request, Response
 from flask_cors import CORS
 import json
-import logging
 import sqlite3
 import uuid
 
