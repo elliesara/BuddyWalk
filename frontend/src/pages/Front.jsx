@@ -131,6 +131,7 @@ function Front( { user } ) {
         .then(data => {
                 if (data["message"] === "success") {
                     // group by request id and display (but how)
+                    console.log("z");
                 } else {
                     alert("refresh bad");
                 }

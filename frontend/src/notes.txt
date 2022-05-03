@@ -1,4 +1,3 @@
-- submitting requests, getting others to see them/be able to send requests/having the user be able to accept/decline requests
-- user/login implementation
-- replace placeholder text/images in components with user properties
-- how we're going to do location?? like for the pending requests, the current location of users? can get rid of if too annoying
+- dropping past requests (or not, i dont know)
+- functionality (routing from successful login to homepage)
+- accepting an offer should remove that entry from the page

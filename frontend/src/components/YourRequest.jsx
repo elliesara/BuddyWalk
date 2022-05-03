@@ -11,7 +11,6 @@ function YourRequest( { rid, from, to } ) {
                 <FontAwesomeIcon icon={faArrowRightLong} />
                 <p className="destination">{to}</p>
             </div>
-            <PendingRequest requester="Alice" />
         </div>
     )
 }

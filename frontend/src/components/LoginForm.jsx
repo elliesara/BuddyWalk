@@ -1,7 +1,11 @@
 import "./loginform.css";
 import Button from "./Button"
+import { useNavigate } from 'react-router-dom';
 
 function LoginForm() {
+
+    let navigate = useNavigate();
+
     function login(e) {
         e.preventDefault();
         fetch("http://localhost:8000/login", {
