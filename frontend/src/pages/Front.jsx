@@ -7,8 +7,6 @@ import YourRequest from "../components/YourRequest"
 import PastRequest from "../components/PastRequest"
 import ActiveOffer from "../components/ActiveOffer"
 
-// probably end up with just the three headers and a function to populate each of the sections as requests come in (backend?)
-
 function Front( { user } ) {
     const [currentRequests, setCurrentRequests] = useState([]);
     const [yourRequests, setYourRequests] = useState([]);
@@ -18,7 +16,7 @@ function Front( { user } ) {
     useEffect(() => {
         // fetching initial current requests section
         fetch("http://localhost:8000/requests", {
-            method: "GET"
+            method: "GET",
         })
         .then(response => response.json())
         .then(data => {
@@ -105,7 +103,6 @@ function Front( { user } ) {
     }
 
     function update(e) {
-        // probably just update the first three sections; the last one should handle itself
         e.preventDefault();
         fetch("http://localhost:8000/requests", {
             method: "GET"
@@ -120,6 +117,7 @@ function Front( { user } ) {
             }
         })
         .catch(console.error);
+
         fetch("http://localhost:8000/pendingRequest", {
             method: "POST",
             body: JSON.stringify({
@@ -139,10 +137,26 @@ function Front( { user } ) {
             }
         )
         .catch(console.error);
-    }
 
-    function filterOwnRequestsOut({a, username, b, c}) {
-        return user !== username;
+        fetch("http://localhost:8000/pendingOffer", {
+            method: "POST",
+            body: JSON.stringify({
+                "username": user,
+            }),
+            headers: {
+                'Content-type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data["message"] === "success") {
+                setPendingOffers(data["requests"]);
+            } else {
+                alert("update | offers uve made");
+                console.log(data);
+            }
+        })
+        .catch(console.error);
     }
 
     return (
@@ -156,19 +170,21 @@ function Front( { user } ) {
                 </form>
                 <Button text="Refresh Requests and Offers" color="#575757" callback={update} />
                 <header className="sectionHeader">Current Requests</header>
-                {currentRequests.map(({rid, username, from, to}) => (
-                    <ActiveRequest user={user} rid={rid} requester={username} from={from} to={to} />
-                )).filter(filterOwnRequestsOut)}
+                {currentRequests.map(({rid, username, from, to}) => {
+                    if (user !== username) {
+                        return <ActiveRequest user={user} rid={rid} requester={username} from={from} to={to} />
+                    }
+                })}
                 <header className="sectionHeader">Requests You've Made</header>
                 {yourRequests.map(({rid, _, from, to}) => (
                     <YourRequest rid={rid} from={from} to={to} />
                 ))}
                 <header className="sectionHeader">Offers You've Made</header>
-                {pendingOffers.map(({rid, owner, requester, status}) => (
-                    <ActiveOffer offeredTo={requester} status={status} />
-                ))}
-                <header className="sectionHeader">Your Past Requests</header>
-                <PastRequest from="Moffitt Library" to="Unit 2" />
+                {pendingOffers.map(({rid, owner, requester, status}) => {
+                    if (user === owner) {
+                        <ActiveOffer offeredTo={requester} status={status} />
+                    }
+                })}
             </div>
         </div>
     )
