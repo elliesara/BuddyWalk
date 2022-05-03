@@ -35,7 +35,7 @@ html {
     margin: 4vh 0vw 4vh 0vw;
 }
 
-#requestInput {
+#requestFrom, #requestTo {
     border-radius: 10px;
     border-width: 0px;
     background-color: #e1e1e1;

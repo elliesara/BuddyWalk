@@ -2,17 +2,37 @@ import "./pendingrequest.css";
 import Button from "./Button";
 import Avatar from "./Avatar";
 
-function PendingRequest( {requester} ) {
-    // usual stuff, populate this with user details from requester object (avatar, distance, location)
+function PendingRequest( { requester, rid } ) {
 
-    const acceptRequest = () => {
-        // fill out
-        return;
+    // statuses are accept, waiting, decline
+
+    const acceptRequest = (e) => {
+        e.preventDefault();
+        fetch("http://localhost:8000/acceptPendingRequest", {
+            method: "POST",
+            body: JSON.stringify({
+                "requester": requester,
+                "rid": rid
+            }),
+            headers: {
+                'Content-type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data["message"] === "success") {
+                // delete all other pending offers, move this request to past requests with accepted persons name
+            } else {
+                alert("Request creation failed, please try again.");
+            }
+        })
+        .catch(console.error);
     }
 
-    const rejectRequest = () => {
-        // fill out
-        return;
+    const rejectRequest = (e) => {
+        e.preventDefault();
+        // remove this offer from under requests
+        // kind of jank but work around having the status set to decline only when another person's offer has been accepted
     }
 
     return (
@@ -20,11 +40,6 @@ function PendingRequest( {requester} ) {
             <Avatar source="./a.png" />
             <div className="stackedContainer">
                 <p className="stacked requester">{requester}</p>
-                <p className="stacked requesterDistance">0.4mi</p>
-            </div>
-            <div className="stacked">
-                <p className="stacked currentlyAt">Currently at</p>
-                <p className="stacked requesterLocation">Crossroads</p>
             </div>
             <div className="choices">
                 <Button text="Accept" color="#34c258" callback={acceptRequest} />

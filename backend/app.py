@@ -1,6 +1,7 @@
 #app.py
 
 from flask import Flask, request, Response
+from flask_cors import CORS
 import json
 import logging
 import sqlite3
@@ -8,6 +9,7 @@ import uuid
 
 DATABASE = './database.db'
 app = Flask(__name__)
+CORS(app)
 db = sqlite3.connect(DATABASE, check_same_thread=False)
 cursor = db.cursor()
 userdb = """
@@ -134,12 +136,55 @@ def createRequest():
     response = Response(
         response=json.dumps({
             "rid": rid,
+            "from": fromPlace,
+            "to": toPlace,
             "message": "success"
         }), 
         status=201, 
         mimetype='application/json'
     )
     return response
+
+@app.route('/requestInfo', methods=["POST"])
+def getRequestInfo():
+    if request.headers['Content-Type'] == 'application/json':
+        arguments = request.get_json()
+        if "rid" in arguments:
+            rid = arguments.get("rid")
+        else:
+            return {
+                'error': 'This input does not contain proper fields',
+                'status': 404
+            }, 404
+    else:
+        return {
+            'error': 'This input is not in a json format',
+            'status': 404
+        }, 404
+    try:
+        query = "select * from requests where rid = ?"
+        cursor.execute(query, [rid])
+        rv = cursor.fetchall()
+        requests = []
+        for row in range(len(rv)):
+            rid = rv[row][0]
+            username = rv[row][1]
+            fromPlace = rv[row][2]
+            toPlace = rv[row][3]
+            value = {
+                "rid": rid,
+                "username": username,
+                "from": fromPlace,
+                "to": toPlace
+            }
+            requests += [value]
+        return {'requests': requests}, 200
+    except:
+        return {
+            'error': 'getting request info error',
+            'status': 404
+        }, 404
+
 
 @app.route('/requests', methods=["GET"])
 def listAllRequests():
@@ -160,7 +205,7 @@ def listAllRequests():
                 "to": toPlace
             }
             requests += [value]
-        return {'requests': requests}, 200
+        return {'requests': requests, 'message': 'success'}, 200
     except:
         return {
             'error': 'Listing all requests error',
@@ -201,7 +246,7 @@ def listUserRequests():
                 "to": toPlace
             }
             requests += [value]
-        return {'requests': requests}, 200
+        return {'requests': requests, 'message': 'success'}, 200
     except:
         return {
             'error': 'Listing all requests error',
@@ -285,7 +330,7 @@ def getPendingRequest():
             "status": status
         }
         requests += [value]
-    return {'requests': requests}, 200
+    return {'requests': requests, 'message': 'success'}, 200
 
 @app.route('/pendingOffer', methods=["POST"])
 def getPendingOffer():
@@ -319,7 +364,7 @@ def getPendingOffer():
             "status": status
         }
         requests += [value]
-    return {'requests': requests}, 200
+    return {'requests': requests, 'message': 'success'}, 200
 
 @app.route('/acceptPendingRequest', methods=["POST"])
 def acceptPendingRequest():

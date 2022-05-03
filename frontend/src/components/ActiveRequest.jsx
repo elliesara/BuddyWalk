@@ -4,26 +4,42 @@ import Button from "./Button";
 import Avatar from "./Avatar";
 import "./activerequest.css";
 
-function ActiveRequest({ requester, from, to }) {
-    // requester probably should be changed from a string to a user account, and then reference that for the username string
-    // distance from requester ? maybe with a location api if those exist
-    // requester string and profile picture should be replaced from the user data, i just have placeholders for now
+function ActiveRequest({ user, rid, requester, from, to }) {
 
-    const sendRequest = () => {
-        // ? backend stuff
+    function offer(e) {
+        e.preventDefault();
+        fetch("http://localhost:8000/offer", {
+            method: "POST",
+            body: JSON.stringify({
+                "username": user,
+                "rid": rid
+            }),
+            headers: {
+                'Content-type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data["message"] === "success") {
+                // add to pending offers w status
+            } else {
+                alert("Request creation failed, please try again.");
+            }
+        })
+        .catch(console.error);
     }
 
     return (
-        <div class="container">
+        <div className="container">
             <Avatar source="./a.png" />
-            <p class="requester">{requester}</p>
-            <div class="stackedContainer">
-                <p class="stacked">{from} <FontAwesomeIcon icon={faArrowRightLong} /></p>
-                <p class="stacked destination">{to}</p>
+            <p className="requester">{requester}</p>
+            <div className="stackedContainer">
+                <p className="stacked">{from} <FontAwesomeIcon icon={faArrowRightLong} /></p>
+                <p className="stacked destination">{to}</p>
             </div>
-            <Button text="Offer a walk" color="orange" callback={sendRequest} />
+            <Button text="Offer a walk" color="orange" callback={offer} />
         </div>
-    ) // why is this not aligned properly i cant figure it out
+    )
 }
 
 export default ActiveRequest;
