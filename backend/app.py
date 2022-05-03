@@ -344,17 +344,17 @@ def acceptPendingRequest():
         rv = cursor.fetchall()
         status = rv[0][0]
         if status == "waiting":
-            declinequery = "UPDATE pendingrequests SET status = decline WHERE rid = ?"
+            declinequery = "UPDATE pendingrequests SET status = 'declined' WHERE rid = ?"
             cursor.execute(declinequery, [rid])
             db.commit()
-            query = "UPDATE pendingrequests SET status = accept WHERE requester = ? and rid = ?"
+            query = "UPDATE pendingrequests SET status = 'accepted' WHERE requester = ? and rid = ?"
             cursor.execute(query, [requester, rid])
             db.commit()
             response = Response(
                 response=json.dumps({
                     "rid": rid,
                     "requester": requester,
-                    "status": status,
+                    "status": "accepted",
                     "message": "success"
                 }), 
                 status=200, 
@@ -368,9 +368,9 @@ def acceptPendingRequest():
             }, 404
     except:
         return {
-                'error': 'Accept pending offer error',
-                'status': 404
-            }, 404
+            'error': 'Accept pending offer error',
+            'status': 404
+        }, 404
 
 if __name__ == "__main__":
   app.run(host="0.0.0.0", port=8000, debug=True)
