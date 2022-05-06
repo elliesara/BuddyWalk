@@ -22,6 +22,8 @@ function LoginForm() {
         .then(data => {
             if (data["message"] === "success") {
                 // send user to the front page with user=user
+                /* eslint no-restricted-globals:0 */
+                location.href = './home'
             } else {
                 alert("Login failed, please try again.");
                 console.log(data);
