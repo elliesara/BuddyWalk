@@ -10,7 +10,7 @@ function App() {
     <Router>
       <Routes>
         <Route exact path="/" element={<Login/>}/>
-        <Route exact path="/home" element={<Front/>}/>
+        <Route exact path="/home" element={<Front user="Selina1" />}/>
       </Routes>
     </Router>
   );
