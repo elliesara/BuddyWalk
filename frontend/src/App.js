@@ -3,17 +3,16 @@ import Login from "./pages/Login";
 import './App.css';
 
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
-} from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 
 function App() {
   return (
-    <Front user="Selina1" />
-    // <Login />
+    <Router>
+      <Routes>
+        <Route exact path="/" element={<Login/>}/>
+        <Route exact path="/home" element={<Front/>}/>
+      </Routes>
+    </Router>
   );
 }
 
