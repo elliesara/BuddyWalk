@@ -71,6 +71,27 @@ function Front( { user } ) {
         })
         .catch(console.error);
 
+        fetch("http://localhost:8000/acceptedOffer", {
+            method: "POST",
+            body: JSON.stringify({
+                "username": user,
+            }),
+            headers: {
+                'Content-type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data["message"] === "success") {
+                setPastRequests(data["requests"]);
+                console.log(pastRequests);
+            } else {
+                alert("update | pastreqs");
+                console.log(data);
+            }
+        })
+        .catch(console.error);
+
     }, [])
 
     function createRequest(e) {
@@ -154,6 +175,28 @@ function Front( { user } ) {
                 console.log(pendingOffers)
             } else {
                 alert("update | offers uve made");
+                console.log(data);
+            }
+        })
+        .catch(console.error);
+
+        // fetch past reqs
+        fetch("http://localhost:8000/acceptedOffer", {
+            method: "POST",
+            body: JSON.stringify({
+                "username": user,
+            }),
+            headers: {
+                'Content-type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data["message"] === "success") {
+                setPastRequests(data["requests"]);
+                console.log(pastRequests);
+            } else {
+                alert("update | pastreqs");
                 console.log(data);
             }
         })
