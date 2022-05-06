@@ -233,9 +233,9 @@ function Front( { user } ) {
                     <ActiveOffer offeredTo={owner} status={status} />
                 ))}
                 <header className="sectionHeader">Past Requests</header>
-                {pastRequests.map(({ owner, offerer, from, to }) => {
-                    if (true) { // same thing here, change
-                        return <PastRequest acceptedOfferer={offerer} from={from} to={to} />
+                {pastRequests.map(({ owner, requester, from, to }) => {
+                    if (user === owner) { // same thing here, change
+                        return <PastRequest acceptedOfferer={requester} from={from} to={to} />
                     }
                 })}
             </div>
