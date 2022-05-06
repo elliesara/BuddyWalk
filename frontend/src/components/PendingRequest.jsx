@@ -1,8 +1,11 @@
 import "./pendingrequest.css";
 import Button from "./Button";
 import Avatar from "./Avatar";
+import React, { useEffect, useState } from 'react';
 
 function PendingRequest( { requester, rid } ) {
+
+    const [visible, setVisible] = useState(true);
 
     // statuses are accept, waiting, decline
 
@@ -31,11 +34,10 @@ function PendingRequest( { requester, rid } ) {
 
     const rejectRequest = (e) => {
         e.preventDefault();
-        // remove this offer from under requests
-        // kind of jank but work around having the status set to decline only when another person's offer has been accepted
+        setVisible(false);
     }
 
-    return (
+    return ( visible ?
         <div className="pendingRequest">
             <Avatar source="./a.png" />
             <div className="stackedContainer">
@@ -46,6 +48,7 @@ function PendingRequest( { requester, rid } ) {
                 <Button text="Decline" color="#c23445" callback={rejectRequest} />
             </div>
         </div>
+        : <div></div>
     )
 }
 

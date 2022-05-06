@@ -13,7 +13,7 @@ function Front( { user } ) {
     const [yourRequests, setYourRequests] = useState([]);
     const [pendingOffers, setPendingOffers] = useState([]);
     const [pendingRequest, setPendingRequest] = useState([]);
-    // const [pastRequests, setPastRequests] = useState([]);
+    const [pastRequests, setPastRequests] = useState([]);
 
     useEffect(() => {
         // fetching initial current requests section
@@ -25,7 +25,6 @@ function Front( { user } ) {
             if (data["message"] === "success") {
                 setCurrentRequests(data["requests"]);
             } else {
-                alert("asd1");
                 console.log(data);
             }
         })
@@ -46,7 +45,6 @@ function Front( { user } ) {
             if (data["message"] === "success") {
                 setYourRequests(data["requests"]);
             } else {
-                alert("Setting initial request unsuccessful");
                 console.log(data);
             }
         })
@@ -68,7 +66,27 @@ function Front( { user } ) {
                 setPendingOffers(data["requests"]);
                 console.log(pendingOffers);
             } else {
-                alert("asd2");
+                console.log(data);
+            }
+        })
+        .catch(console.error);
+
+        fetch("http://localhost:8000/acceptedOffer", {
+            method: "POST",
+            body: JSON.stringify({
+                "username": user,
+            }),
+            headers: {
+                'Content-type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data["message"] === "success") {
+                setPastRequests(data["requests"]);
+                console.log(pastRequests);
+            } else {
+                alert("update | pastreqs");
                 console.log(data);
             }
         })
@@ -161,6 +179,28 @@ function Front( { user } ) {
             }
         })
         .catch(console.error);
+
+        // fetch past reqs
+        fetch("http://localhost:8000/acceptedOffer", {
+            method: "POST",
+            body: JSON.stringify({
+                "username": user,
+            }),
+            headers: {
+                'Content-type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data["message"] === "success") {
+                setPastRequests(data["requests"]);
+                console.log(pastRequests);
+            } else {
+                alert("update | pastreqs");
+                console.log(data);
+            }
+        })
+        .catch(console.error);
     }
 
     return (
@@ -184,7 +224,7 @@ function Front( { user } ) {
                     <YourRequest rid={rid} from={from} to={to} />
                 ))}
                 {pendingRequest.map(({rid, owner, requester, status}) => {
-                    if (true) {
+                    if (true) { // change to correct user === owner or user === requester
                         return <PendingRequest rid={rid} requester={requester} />
                     }
                 })}
@@ -192,6 +232,12 @@ function Front( { user } ) {
                 {pendingOffers.map(({rid, owner, requester, status}) => (
                     <ActiveOffer offeredTo={owner} status={status} />
                 ))}
+                <header className="sectionHeader">Past Requests</header>
+                {pastRequests.map(({ owner, offerer, from, to }) => {
+                    if (true) { // same thing here, change
+                        return <PastRequest acceptedOfferer={offerer} from={from} to={to} />
+                    }
+                })}
             </div>
         </div>
     )

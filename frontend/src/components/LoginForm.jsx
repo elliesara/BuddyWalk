@@ -20,12 +20,12 @@ function LoginForm() {
         })
         .then(response => response.json())
         .then(data => {
-                if (data["message"] === "success") {
-                    // send user to the front page with user=user
-                } else {
-                    alert("Login failed, please try again.");
-                    console.log(data);
-                }
+            if (data["message"] === "success") {
+                // send user to the front page with user=user
+            } else {
+                alert("Login failed, please try again.");
+                console.log(data);
+            }
             }
         )
         .catch(console.error);
