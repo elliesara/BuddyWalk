@@ -12,7 +12,7 @@ import {
 
 function App() {
   return (
-    <Front user="Selina1" />
+    <Front user="Eve" />
     // <Login />
   );
 }

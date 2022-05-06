@@ -11,7 +11,8 @@ function Front( { user } ) {
     const [currentRequests, setCurrentRequests] = useState([]);
     const [yourRequests, setYourRequests] = useState([]);
     const [pendingOffers, setPendingOffers] = useState([]);
-    const [pastRequests, setPastRequests] = useState([]);
+    const [pendingRequest, setPendingRequest] = useState([]);
+    // const [pastRequests, setPastRequests] = useState([]);
 
     useEffect(() => {
         // fetching initial current requests section
@@ -132,6 +133,7 @@ function Front( { user } ) {
         .then(data => {
             if (data["message"] === "success") {
                 // group by request id and display (but how)
+                setPendingRequest(data["requests"])
                 console.log("z");
             } else {
                 alert("refresh bad");
@@ -152,6 +154,7 @@ function Front( { user } ) {
         .then(data => {
             if (data["message"] === "success") {
                 setPendingOffers(data["requests"]);
+                console.log(pendingOffers)
             } else {
                 alert("update | offers uve made");
                 console.log(data);
@@ -160,29 +163,29 @@ function Front( { user } ) {
         .catch(console.error);
     }
 
-    function offer(requester, rid) {
-        // e.preventDefault();
-        fetch("http://localhost:8000/offer", {
-            method: "POST",
-            body: JSON.stringify({
-                "username": requester,
-                "rid": rid
-            }),
-            headers: {
-                'Content-type': 'application/json',
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data["message"] === "success") {
-                // add to pending offers w status
-                yourRequests.push({ "rid": data["rid"], "owner": data["owner"], "requester": data["requester"], "status": data["status"]});
-            } else {
-                alert("Request creation failed, please try again.");
-            }
-        })
-        .catch(console.error);
-    }
+    // function offer(requester, rid) {
+    //     // e.preventDefault();
+    //     fetch("http://localhost:8000/offer", {
+    //         method: "POST",
+    //         body: JSON.stringify({
+    //             "username": requester,
+    //             "rid": rid
+    //         }),
+    //         headers: {
+    //             'Content-type': 'application/json',
+    //         }
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         if (data["message"] === "success") {
+    //             // add to pending offers w status
+    //             pendingOffers.push({ "rid": data["rid"], "owner": data["owner"], "requester": data["requester"], "status": data["status"]});
+    //         } else {
+    //             alert("Request creation failed, please try again.");
+    //         }
+    //     })
+    //     .catch(console.error);
+    // }
 
     return (
         <div className="base">
@@ -197,7 +200,7 @@ function Front( { user } ) {
                 <header className="sectionHeader">Current Requests</header>
                 {currentRequests.map(({rid, username, from, to}) => {
                     if (user !== username) {
-                        return <ActiveRequest offerFunc={offer} username={username} rid={rid} requester={user} from={from} to={to} />
+                        return <ActiveRequest username={username} rid={rid} requester={user} from={from} to={to} />
                     }
                 })}
                 <header className="sectionHeader">Requests You've Made</header>
@@ -205,11 +208,9 @@ function Front( { user } ) {
                     <YourRequest rid={rid} from={from} to={to} />
                 ))}
                 <header className="sectionHeader">Offers You've Made</header>
-                {pendingOffers.map(({rid, owner, requester, status}) => {
-                    if (user === owner) {
-                        <ActiveOffer offeredTo={requester} status={status} />
-                    }
-                })}
+                {pendingOffers.map(({rid, owner, requester, status}) => (
+                    <ActiveOffer offeredTo={owner} status={status} />
+                ))}
             </div>
         </div>
     )

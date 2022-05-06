@@ -1,4 +1,6 @@
 import "./activeoffer.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRightLong } from '@fortawesome/free-solid-svg-icons';
 
 function ActiveOffer( { offeredTo, status } ) {
     return (

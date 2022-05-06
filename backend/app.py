@@ -340,7 +340,7 @@ def getPendingRequest():
                 'error': 'This input is not in a json format',
                 'status': 404
             }, 404
-        getQuery = "SELECT * from pendingrequests where owner = ?"
+        getQuery = "SELECT * from pendingrequests where owner = ? order by rid"
         cursor.execute(getQuery, [username])
         rv = cursor.fetchall()
         requests = []
@@ -460,4 +460,4 @@ def after_request(response):
     return response
 
 if __name__ == "__main__":
-  app.run(host="0.0.0.0", port=3000, debug=True)
+  app.run(host="0.0.0.0", port=8000, debug=True)
