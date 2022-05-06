@@ -452,6 +452,52 @@ def acceptPendingRequest():
     finally:
         lock.release()
 
+@app.route('/acceptedOffer', methods=["POST"])
+def acceptedOffer():
+    try:
+        lock.acquire(True)
+        if request.headers['Content-Type'] == 'application/json':
+            arguments = request.get_json()
+            if "username" in arguments:
+                username = arguments.get("username")
+            else:
+                return {
+                    'error': 'This input does not contain proper fields',
+                    'status': 404
+                }, 404
+        else:
+            return {
+                'error': 'This input is not in a json format',
+                'status': 404
+            }, 404
+        getQuery = "SELECT * from pendingrequests where status = 'accepted' and owner = ?"
+        cursor.execute(getQuery, [username])
+        rv = cursor.fetchall()
+        requests = []
+        for row in range(len(rv)):
+            rid = rv[row][0]
+            owner = rv[row][1]
+            requester = rv[row][2]
+            getFrom = "SELECT fromplace from requests where rid = ? and username = ?"
+            cursor.execute(getFrom, [rid, owner])
+            res = cursor.fetchall()
+            fromplace = res[0][0]
+            getTo = "SELECT toplace from requests where rid = ? and username = ?"
+            cursor.execute(getTo, [rid, owner])
+            res = cursor.fetchall()
+            toplace = res[0][0]
+
+            value = {
+                "owner": owner,
+                "requester": requester,
+                "from": fromplace,
+                "to": toplace
+            }
+            requests += [value]
+        return {'requests': requests, 'message': 'success'}, 200
+    finally:
+        lock.release()
+
 @app.after_request
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
