@@ -6,7 +6,7 @@ function Top( {user} ) {
         <div className="top">
             <header className="top-header">Buddy Walk</header>
             <div className="userInfo">
-                <Avatar source="./a.png" />
+                {/* <Avatar source="./a.png" /> */}
                 <p className="username">{user}</p>
             </div>
         </div>

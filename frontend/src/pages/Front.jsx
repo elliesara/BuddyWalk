@@ -7,13 +7,15 @@ import YourRequest from "../components/YourRequest"
 import PastRequest from "../components/PastRequest"
 import ActiveOffer from "../components/ActiveOffer"
 import PendingRequest from '../components/PendingRequest';
+import { useParams } from 'react-router-dom';
 
-function Front( { user } ) {
+function Front() {
     const [currentRequests, setCurrentRequests] = useState([]);
     const [yourRequests, setYourRequests] = useState([]);
     const [pendingOffers, setPendingOffers] = useState([]);
     const [pendingRequest, setPendingRequest] = useState([]);
     const [pastRequests, setPastRequests] = useState([]);
+    let { user } = useParams();
 
     useEffect(() => {
         // fetching initial current requests section

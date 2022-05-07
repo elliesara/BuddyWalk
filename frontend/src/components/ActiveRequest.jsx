@@ -32,7 +32,7 @@ function ActiveRequest({ username, rid, requester, from, to }) {
 
     return (
         <div className="container">
-            <Avatar source="./a.png" />
+            {/* <Avatar source="./a.png" /> */}
             <p className="requester">{username}</p>
             <div className="stackedContainer">
                 <p className="stacked">{from} <FontAwesomeIcon icon={faArrowRightLong} /></p>

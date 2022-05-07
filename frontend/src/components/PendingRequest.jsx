@@ -39,7 +39,7 @@ function PendingRequest( { requester, rid } ) {
 
     return ( visible ?
         <div className="pendingRequest">
-            <Avatar source="./a.png" />
+            {/* <Avatar source="./a.png" /> */}
             <div className="stackedContainer">
                 <p className="stacked requester">{requester}</p>
             </div>
